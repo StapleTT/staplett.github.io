@@ -1,49 +1,435 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="styles/main.css">
-    <title>$ ./staplett.sh</title>
+<title>$ ./staplett.sh</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0c;
+    color: #dddbd4;
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scanline {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 780px;
+    padding: 3rem 2rem;
+  }
+
+  .prompt-line {
+    color: #7CA1A6;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadein 0.4s forwards;
+  }
+
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 800;
+    color: #f0ede6;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.2em;
+    opacity: 0;
+    animation: fadein 0.5s 0.1s forwards;
+  }
+
+  .hero-name span { color: #7CA1A6; }
+  .hero-name .glitch-char { display: inline-block; }
+
+  .tagline {
+    font-size: 11px;
+    color: #666;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadein 0.5s 0.2s forwards;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #1e1e22;
+    margin: 2rem 0;
+    opacity: 0;
+    animation: fadein 0.5s 0.25s forwards;
+  }
+
+  .bio {
+    font-size: 13px;
+    line-height: 2;
+    color: #999591;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+    opacity: 0;
+    animation: fadein 0.5s 0.3s forwards;
+  }
+
+  .bio .hl { color: #7CA1A6; font-weight: 700; }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #444;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadein 0.5s 0.35s forwards;
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: #18181c;
+    border: 1px solid #18181c;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadein 0.5s 0.4s forwards;
+  }
+
+  .project-card {
+    background: #0e0e11;
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transition: background 0.15s;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card:hover { background: #131317; }
+  .project-card:hover .proj-name { color: #7CA1A6; }
+
+  .project-card:active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(124,161,166,0.08);
+    animation: clickglow 0.4s ease-out forwards;
+  }
+
+  .proj-tag {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: #3a3a40;
+    text-transform: uppercase;
+  }
+
+  .proj-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #dddbd4;
+    letter-spacing: 0.02em;
+    transition: color 0.15s;
+  }
+
+  .proj-desc {
+    font-size: 10.5px;
+    color: #555;
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  .proj-link {
+    font-size: 10px;
+    color: #3a3a40;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+  }
+
+  .github-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadein 0.5s 0.45s forwards;
+  }
+
+  .subtle-link {
+    font-size: 11px;
+    color: #555;
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid #222;
+    padding-bottom: 1px;
+    transition: color 0.15s, border-color 0.15s;
+    position: relative;
+  }
+
+  .subtle-link:hover { color: #7CA1A6; border-color: #7CA1A6; }
+
+  .subtle-link:active { color: #a8c8cc; }
+
+  .mods-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0e0e11;
+    border: 1px solid #18181c;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadein 0.5s 0.5s forwards;
+  }
+
+  .mods-left { display: flex; flex-direction: column; gap: 3px; }
+
+  .mods-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #dddbd4;
+  }
+
+  .mods-sub {
+    font-size: 10.5px;
+    color: #555;
+  }
+
+  .mods-btn {
+    font-size: 11px;
+    color: #7CA1A6;
+    text-decoration: none;
+    letter-spacing: 0.07em;
+    border: 1px solid #7CA1A6;
+    padding: 7px 14px;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .mods-btn:hover { background: #7CA1A6; color: #0a0a0c; }
+
+  .mods-btn:active {
+    box-shadow: 0 0 14px rgba(124,161,166,0.5), 0 0 4px rgba(124,161,166,0.8);
+    background: #91b5ba;
+    color: #0a0a0c;
+  }
+
+  .footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadein 0.5s 0.55s forwards;
+  }
+
+  .status {
+    font-size: 11px;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    background: #7CA1A6;
+    border-radius: 50%;
+    animation: pulse 2.5s infinite;
+    flex-shrink: 0;
+  }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: transparent;
+    border: 1px solid #7CA1A6;
+    color: #7CA1A6;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 9px 16px;
+    text-decoration: none;
+    letter-spacing: 0.07em;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  }
+
+  .btn:hover { background: #7CA1A6; color: #0a0a0c; }
+
+  .btn:active {
+    box-shadow: 0 0 16px rgba(124,161,166,0.55), 0 0 4px rgba(124,161,166,0.9);
+    background: #91b5ba;
+    color: #0a0a0c;
+  }
+
+  .btn svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
+
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+
+  @keyframes clickglow {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @media (max-width: 560px) {
+    .project-grid { grid-template-columns: 1fr; }
+    .mods-strip { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  }
+</style>
 </head>
 <body>
-    <div id="wrapper">
-        <div class="page-content">
-            <div class="section-wrapper">
-                <section class="intro">
-                    <h2>Hi, I'm Staple.</h2>
-                    <p>That's a pen name. You probably haven't heard of me before...</p>
-                    <p>
-                        <i class="intro-icon fas fa-box-open"></i>
-                        <span>
-                            Looking for my Minecraft mods? 
-                            <a class="link" href="https://modrinth.com/user/StapleTT" target="_blank">Check them out here.</a>
-                        </span>
-                    </p>
-                </section>
-                <hr>
-                <section class="social">
-                    <h3>
-                        <i class="fas fa-hand-peace prefix-icon"></i>
-                        <span>Find me elsewhere</span>
-                    </h3>
-                    <div class="btn-row social-links">
-                        <a class="btn link social-title" href="https://github.com/StapleTT" target="_blank" rel="noopener noreferrer">
-                            <i class="fab fa-github"></i>GitHub
-                        </a>
-                        <a class="btn link social-title" href="https://discord.gg/jgDNauCzXN" target="_blank">
-                            <i class="fab fa-discord"></i>Discord
-                        </a>
-                    </div>
-                </section>
-            </div>
-        </div>
+<div class="scanline"></div>
+<div class="container">
+
+  <div class="prompt-line">~/staple $ whoami</div>
+  <h1 class="hero-name" id="heroName">Sta<span>ple</span></h1>
+  <p class="tagline">modder &nbsp;·&nbsp; developer &nbsp;·&nbsp; security researcher</p>
+
+  <hr class="divider">
+
+  <p class="bio">
+    I'm <span class="hl">StapleTT</span> — I build tools that solve real problems.
+    From <span class="hl">WiFi security research scripts</span> to Raspberry Pi customization
+    and Linux automation, I write software that does the tedious work so you don't have to.
+    I also make Minecraft mods.
+  </p>
+
+  <p class="section-label">// featured projects</p>
+
+  <div class="project-grid">
+    <a class="project-card" href="https://github.com/StapleTT/aircracked" target="_blank">
+      <div class="proj-tag">[ sec ]</div>
+      <div class="proj-name">aircracked</div>
+      <div class="proj-desc">Automates WiFi handshake capture and password cracking with GPU acceleration via hashcat. Authorized environments only.</div>
+      <div class="proj-link">github ↗</div>
+    </a>
+    <a class="project-card" href="https://github.com/StapleTT/pi-dotfiles" target="_blank">
+      <div class="proj-tag">[ config ]</div>
+      <div class="proj-name">pi-dotfiles</div>
+      <div class="proj-desc">Automatically customizes the Raspberry Pi desktop into a more functional, opinionated environment.</div>
+      <div class="proj-link">github ↗</div>
+    </a>
+    <a class="project-card" href="https://github.com/StapleTT/unixscripts" target="_blank">
+      <div class="proj-tag">[ linux ]</div>
+      <div class="proj-name">unixscripts</div>
+      <div class="proj-desc">A miscellaneous collection of Linux automation scripts for day-to-day system tasks.</div>
+      <div class="proj-link">github ↗</div>
+    </a>
+  </div>
+
+  <div class="github-row">
+    <a class="subtle-link" href="https://github.com/StapleTT" target="_blank">view all repos on github ↗</a>
+  </div>
+
+  <p class="section-label">// minecraft mods</p>
+
+  <div class="mods-strip">
+    <div class="mods-left">
+      <div class="mods-title">7 published mods</div>
+      <div class="mods-sub">Hardcore revive systems, server utilities, QoL tweaks & more.</div>
     </div>
-    <footer>
-        <p>
-            &#169; 2025 StapleTT. All Rights Reserved.<br>
-            Icons used from 
-            <a class="link" href="https://fontawesome.com/" target="_blank" rel="noopener noreferrer">Font Awesome</a>.
-        </p>
-    </footer>
+    <a class="mods-btn" href="https://modrinth.com/user/StapleTT" target="_blank">view on modrinth ↗</a>
+  </div>
+
+  <div class="footer-row">
+    <span class="status"><span class="dot"></span>open to collaboration</span>
+    <div class="btn-row">
+      <a class="btn" href="https://github.com/StapleTT" target="_blank">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        github ↗
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const GLITCH_CHARS = '!@#$%^&*<>?/\\|[]{}~`0123456789ABCDEFabcdef';
+
+function glitchElement(el) {
+  const original = el.dataset.original;
+  if (!original) return;
+  let iterations = 0;
+  const max = 6;
+  const interval = setInterval(() => {
+    el.textContent = iterations < max
+      ? GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+      : original;
+    if (iterations >= max) clearInterval(interval);
+    iterations++;
+  }, 50);
+}
+
+function setupGlitch() {
+  const hero = document.getElementById('heroName');
+  const text = hero.innerText;
+  hero.innerHTML = '';
+  for (const ch of text) {
+    const span = document.createElement('span');
+    span.className = 'glitch-char';
+    span.textContent = ch;
+    span.dataset.original = ch;
+    if (ch === 'l' || ch === 'e') span.style.color = '#7CA1A6';
+    hero.appendChild(span);
+  }
+
+  setInterval(() => {
+    const chars = hero.querySelectorAll('.glitch-char');
+    const idx = Math.floor(Math.random() * chars.length);
+    glitchElement(chars[idx]);
+  }, 1800);
+}
+
+function setupBodyGlitch() {
+  const targets = document.querySelectorAll('.proj-tag, .section-label, .prompt-line');
+  targets.forEach(el => {
+    const chars = el.textContent.split('');
+    el.innerHTML = chars.map(c =>
+      c.trim() ? `<span class="glitch-char" data-original="${c}">${c}</span>` : c
+    ).join('');
+  });
+
+  setInterval(() => {
+    targets.forEach(el => {
+      if (Math.random() > 0.7) {
+        const spans = el.querySelectorAll('.glitch-char');
+        if (spans.length) {
+          const s = spans[Math.floor(Math.random() * spans.length)];
+          glitchElement(s);
+        }
+      }
+    });
+  }, 2400);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setupGlitch();
+  setupBodyGlitch();
+});
+</script>
 </body>
 </html>
