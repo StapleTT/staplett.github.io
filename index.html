@@ -95,6 +95,37 @@
     animation: fadein 0.5s 0.35s forwards;
   }
 
+  .project-featured {
+    background: #0e0e11;
+    border: 1px solid #7CA1A6;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 1px;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.15s;
+    opacity: 0;
+    animation: fadein 0.5s 0.4s forwards;
+  }
+
+  .project-featured:hover { background: #131317; }
+  .project-featured:hover .proj-name { color: #7CA1A6; }
+
+  .project-featured:active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(124,161,166,0.08);
+    animation: clickglow 0.4s ease-out forwards;
+  }
+
+  .project-featured .proj-tag { color: #7CA1A6; }
+  .project-featured .proj-desc { font-size: 11.5px; color: #666; }
+
   .project-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -182,51 +213,6 @@
 
   .subtle-link:active { color: #a8c8cc; }
 
-  .mods-strip {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #0e0e11;
-    border: 1px solid #18181c;
-    padding: 0.9rem 1.1rem;
-    margin-bottom: 2.5rem;
-    opacity: 0;
-    animation: fadein 0.5s 0.5s forwards;
-  }
-
-  .mods-left { display: flex; flex-direction: column; gap: 3px; }
-
-  .mods-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: #dddbd4;
-  }
-
-  .mods-sub {
-    font-size: 10.5px;
-    color: #555;
-  }
-
-  .mods-btn {
-    font-size: 11px;
-    color: #7CA1A6;
-    text-decoration: none;
-    letter-spacing: 0.07em;
-    border: 1px solid #7CA1A6;
-    padding: 7px 14px;
-    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
-    white-space: nowrap;
-    position: relative;
-  }
-
-  .mods-btn:hover { background: #7CA1A6; color: #0a0a0c; }
-
-  .mods-btn:active {
-    box-shadow: 0 0 14px rgba(124,161,166,0.5), 0 0 4px rgba(124,161,166,0.8);
-    background: #91b5ba;
-    color: #0a0a0c;
-  }
-
   .footer-row {
     display: flex;
     align-items: center;
@@ -307,7 +293,7 @@
 
   <div class="prompt-line">~/staple $ whoami</div>
   <h1 class="hero-name" id="heroName">Sta<span>ple</span></h1>
-  <p class="tagline">modder &nbsp;·&nbsp; developer &nbsp;·&nbsp; security researcher</p>
+  <p class="tagline">developer &nbsp;·&nbsp; security researcher</p>
 
   <hr class="divider">
 
@@ -315,10 +301,17 @@
     I'm <span class="hl">StapleTT</span> — I build tools that solve real problems.
     From <span class="hl">WiFi security research scripts</span> to Raspberry Pi customization
     and Linux automation, I write software that does the tedious work so you don't have to.
-    I also make Minecraft mods.
+    Currently building <span class="hl">Spindle</span>, a multi-inbox email client.
   </p>
 
   <p class="section-label">// featured projects</p>
+
+  <a class="project-featured" href="https://github.com/StapleTT/spindle" target="_blank">
+    <div class="proj-tag">[ app ] &nbsp;·&nbsp; main project</div>
+    <div class="proj-name">spindle</div>
+    <div class="proj-desc">Multi-inbox email client. Manage all your email accounts from a single, unified interface — built for people who live in their inbox.</div>
+    <div class="proj-link">github ↗</div>
+  </a>
 
   <div class="project-grid">
     <a class="project-card" href="https://github.com/StapleTT/aircracked" target="_blank">
@@ -343,16 +336,6 @@
 
   <div class="github-row">
     <a class="subtle-link" href="https://github.com/StapleTT" target="_blank">view all repos on github ↗</a>
-  </div>
-
-  <p class="section-label">// minecraft mods</p>
-
-  <div class="mods-strip">
-    <div class="mods-left">
-      <div class="mods-title">7 published mods</div>
-      <div class="mods-sub">Hardcore revive systems, server utilities, QoL tweaks & more.</div>
-    </div>
-    <a class="mods-btn" href="https://modrinth.com/user/StapleTT" target="_blank">view on modrinth ↗</a>
   </div>
 
   <div class="footer-row">
