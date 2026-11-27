@@ -15,7 +15,10 @@ const links = [
   { href: '/uses/', label: 'Uses' },
   { href: '/contact/', label: 'Contact' },
 ];
-const isActive = (href: string) => path === href.slice(0, -1) || path.startsWith(href);
+const navCurrent = (href: string): 'page' | 'location' | undefined => {
+  if (path === href.slice(0, -1)) return 'page';
+  if (path.startsWith(href)) return 'location';
+};
 
 const projects = await getProjects();
 const searchIndex = [
@@ -56,13 +59,13 @@ const searchIndex = [
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-nav">
       <nav class="wrap nav-inner" aria-label="Main">
-        <a class="brand" href="/"><img class="avatar" src="/avatar.webp" alt="" width="30" height="30" />staple</a>
+        <a class="brand" href="/" aria-current={path === '/' ? 'page' : undefined}><img class="avatar" src="/avatar.webp" alt="" width="30" height="30" />staple</a>
         <ul class="nav-links">
           {links.map((l) => (
             <li>
-              <a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>
+              <a href={l.href} aria-current={navCurrent(l.href)}>
                 {l.label}
-                {isActive(l.href) && <span class="nav-underline" aria-hidden="true" />}
+                {navCurrent(l.href) && <span class="nav-underline" aria-hidden="true" />}
               </a>
             </li>
           ))}
@@ -90,7 +93,7 @@ const searchIndex = [
       <nav aria-label="Mobile">
         <ul>
           <li style="--i:0"><a href="/" aria-current={path === '/' ? 'page' : undefined}>Home</a></li>
-          {links.map((l, i) => <li style={`--i:${i + 1}`}><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a></li>)}
+          {links.map((l, i) => <li style={`--i:${i + 1}`}><a href={l.href} aria-current={navCurrent(l.href)}>{l.label}</a></li>)}
         </ul>
       </nav>
     </div>

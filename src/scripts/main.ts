@@ -1,11 +1,19 @@
 const root = document.documentElement;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ---------- Nav shrink on scroll ---------- */
+/* ---------- Sticky navigation ---------- */
 const nav = document.querySelector('.site-nav')!;
 const onScroll = () => nav.classList.toggle('scrolled', scrollY > 8);
 addEventListener('scroll', onScroll, { passive: true });
 onScroll();
+const syncNavHeight = () => {
+  const height = nav.getBoundingClientRect().height;
+  const wrapped = height > 90;
+  nav.classList.toggle('wrapped', wrapped);
+  root.style.setProperty('--nav-height', wrapped ? '0px' : `${height}px`);
+};
+syncNavHeight();
+if (typeof ResizeObserver === 'function') new ResizeObserver(syncNavHeight).observe(nav);
 
 const drawer = document.getElementById('menu')!;
 if (typeof drawer.hidePopover === 'function') {
