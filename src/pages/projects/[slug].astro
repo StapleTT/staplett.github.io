@@ -1,0 +1,55 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Cover from '../../components/Cover.astro';
+import { getProjects, hasPage, type Project } from '../../site';
+
+export async function getStaticPaths() {
+  const pages = (await getProjects()).filter(hasPage);
+  return pages.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, prev: pages[i - 1], next: pages[i + 1] },
+  }));
+}
+
+interface Props { project: Project; prev?: Project; next?: Project }
+const { project: p, prev, next } = Astro.props;
+const { Content } = await render(p);
+---
+<Base title={p.data.title} description={p.data.summary}>
+  <div class="progress" aria-hidden="true"></div>
+  <article class="wrap page-head">
+    <header class="detail-head">
+      <Cover project={p} />
+      <h1 style={`view-transition-name: title-${p.id}`}>{p.data.title}</h1>
+      <p class="summary">{p.data.summary}</p>
+      <div class="detail-meta">
+        <div class="detail-links">
+          {p.data.repo && <a class="btn primary" href={p.data.repo}>View repo ↗</a>}
+          {p.data.live && <a class="btn" href={p.data.live}>{new URL(p.data.live).hostname} ↗</a>}
+          {!p.data.repo && !p.data.live && <span class="muted">Write-up only, no public repo.</span>}
+        </div>
+      </div>
+    </header>
+
+    <div class="detail-layout">
+      <div class="prose"><Content /></div>
+      <aside class="aside-box" aria-label="Project details">
+        <div>
+          <h2>stack</h2>
+          <ul class="tags" style="margin-top:.5rem">{p.data.stack.map((s) => <li class="tag">{s}</li>)}</ul>
+        </div>
+        <div>
+          <h2>category</h2>
+          <p>{p.data.categories.join(' · ')}</p>
+        </div>
+        <p><a href="/projects/">← All projects</a></p>
+      </aside>
+    </div>
+
+    <nav class="pager" aria-label="More projects">
+      {prev && <a href={`/projects/${prev.id}/`}><span>← Previous</span><b>{prev.data.title}</b></a>}
+      {next && <a class="next" href={`/projects/${next.id}/`}><span>Next →</span><b>{next.data.title}</b></a>}
+    </nav>
+  </article>
+</Base>

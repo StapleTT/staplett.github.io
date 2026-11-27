@@ -1,0 +1,23 @@
+---
+import { hasPage, projectHref, type Project } from '../site';
+import Cover from './Cover.astro';
+
+interface Props { project: Project; headingLevel?: 'h2' | 'h3' }
+const { project: p, headingLevel: H = 'h3' } = Astro.props;
+const page = hasPage(p);
+---
+<a
+  class:list={['card', { small: !page }]}
+  href={projectHref(p)}
+  style={`view-transition-name: card-${p.id}`}
+>
+  <Cover project={p} />
+  {!page && <span class="ext" aria-hidden="true">repo ↗</span>}
+  <div class="card-body">
+    <H style={`view-transition-name: title-${p.id}`}>{p.data.title}{!page && <span class="visually-hidden"> (opens repository)</span>}</H>
+    <p>{p.data.summary}</p>
+    <ul class="tags" aria-label="Stack">
+      {p.data.stack.map((s, i) => <li class="tag" style={`--i:${i}`}>{s}</li>)}
+    </ul>
+  </div>
+</a>

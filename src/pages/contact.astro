@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import { EMAIL, GITHUB } from '../site';
+---
+<Base title="Contact" description="How to reach Staple.">
+  <div class="wrap page-head">
+    <h1>Contact</h1>
+    <p>Email is the best way to reach me. Resume available on request.</p>
+  </div>
+  <section class="wrap section" style="padding-top:2.5rem">
+    <div class="contact-card">
+      <div class="contact-row reveal">
+        <div><span class="label">email</span><a href={`mailto:${EMAIL}`}>{EMAIL}</a></div>
+        <button class="icon-btn copy-btn" type="button" data-copy={EMAIL} aria-label="Copy email address">
+          <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>
+          <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="m5 12 5 5 9-10" /></svg>
+        </button>
+      </div>
+      <div class="contact-row reveal">
+        <div><span class="label">github</span><a href={GITHUB} rel="me">github.com/StapleTT</a></div>
+      </div>
+      <p class="muted reveal">Hiring or want a resume? Email me and I'll send it directly.</p>
+    </div>
+  </section>
+</Base>

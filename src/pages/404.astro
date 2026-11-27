@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Not found">
+  <section class="wrap lost">
+    <svg viewBox="0 0 320 120" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <g class="plug-l">
+        <path d="M10 60h90" />
+        <rect x="100" y="44" width="34" height="32" rx="6" />
+        <path d="M134 52h12M134 68h12" />
+      </g>
+      <g class="plug-r">
+        <rect x="186" y="44" width="34" height="32" rx="6" />
+        <path d="M220 60h90" />
+        <circle cx="198" cy="54" r="2.5" fill="currentColor" /><circle cx="198" cy="66" r="2.5" fill="currentColor" />
+      </g>
+      <g stroke="var(--amber)">
+        <path class="spark" d="M166 34l-4 10" />
+        <path class="spark" d="M160 86l6-8" />
+        <path class="spark" d="M172 58h8" />
+      </g>
+    </svg>
+    <h1>404: nothing's plugged in here</h1>
+    <p class="muted">That page doesn't exist, or it moved.</p>
+    <a class="btn primary" href="/">Take me home</a>
+  </section>
+</Base>

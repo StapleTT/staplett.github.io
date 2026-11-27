@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Uses" description="The hardware, software, and homelab Staple uses every day.">
+  <div class="wrap page-head">
+    <h1>Uses</h1>
+    <p>What I build on, run, and type into every day.</p>
+  </div>
+  <section class="wrap section" style="padding-top:2.5rem">
+    <div class="two-col">
+      <div class="panel reveal">
+        <h2>Small form factor builds</h2>
+        <p class="muted">I like fitting full desktop power into the smallest case it'll survive in. Most of the fun is in the planning: airflow, cable routing, and finding parts that physically fit.</p>
+        <!-- Add build specs here (case, CPU, GPU, cooling) when you want them public. -->
+      </div>
+      <div class="panel reveal">
+        <h2>Desktop</h2>
+        <ul>
+          <li>Arch Linux with Hyprland (<a href="https://github.com/StapleTT/T1-dots">dotfiles</a>)</li>
+          <li>fish shell with Starship</li>
+          <li>Neovim</li>
+          <li>Fedora with my <a href="https://github.com/StapleTT/cyb-fedora">cyb-fedora</a> scripts for security lab work</li>
+        </ul>
+      </div>
+      <div class="panel reveal">
+        <h2>Homelab</h2>
+        <ul>
+          <li>Proxmox VE with LXC containers and Docker</li>
+          <li>NGINX reverse proxy with Let's Encrypt TLS</li>
+          <li>WireGuard for remote access</li>
+          <li>Pi-hole for network-wide ad blocking</li>
+          <li>Raspberry Pis for smaller jobs (one runs the <a href="/projects/tack/">tack</a> bridge)</li>
+        </ul>
+        <p style="margin-top:1rem"><a href="/projects/homelab/">Homelab write-up →</a></p>
+      </div>
+      <div class="panel reveal">
+        <h2>Tools I like</h2>
+        <ul>
+          <li>Git and GitHub</li>
+          <li>Wireshark and TShark</li>
+          <li>nmap</li>
+          <li>Docker Compose</li>
+          <li>Android Studio</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>

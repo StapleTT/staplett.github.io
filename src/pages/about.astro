@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import { SKILLS } from '../site';
+---
+<Base title="About" description="About Staple: a high school student into cybersecurity, self-hosting, and small form factor PCs.">
+  <div class="wrap page-head about-intro">
+    <img class="avatar" src="/avatar.webp" alt="Staple's illustrated avatar" width="120" height="120" />
+    <div>
+      <h1>About</h1>
+      <div class="prose" style="margin-top:1rem">
+        <p>Hi, I'm Staple. I'm a high school student in the US, studying computer science and cybersecurity in a career-tech program. Most of my free time goes into my homelab, security tooling, and building small form factor PCs.</p>
+        <p>I like taking things apart to see how they break, then building them back up so they don't. That usually means running my own services instead of renting them, poking at how networks fail in a lab, and writing the tooling I wish already existed.</p>
+        <p>Outside of computers, I play Beat Saber and clarinet.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="wrap section">
+    <div class="two-col">
+      <div class="panel reveal">
+        <h2>Focus areas</h2>
+        <ul>
+          <li><b>Cybersecurity:</b> network attacks and defenses, hardening, packet analysis</li>
+          <li><b>Self-hosting:</b> Proxmox, containers, reverse proxies, VPNs</li>
+          <li><b>Linux:</b> Arch daily, Debian and Fedora on servers and Pis</li>
+          <li><b>Hardware:</b> small form factor PC builds</li>
+        </ul>
+      </div>
+      <div class="panel building reveal">
+        <h2><span class="pulse" aria-hidden="true"></span>Currently building</h2>
+        <ul>
+          <li><a href="/projects/spindle/">Spindle</a>: a keyboard-first, self-hostable email client</li>
+          <li><a href="/projects/tack/">tack</a>: browser game streaming for Moonlight/Sunshine</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section" id="skills" style="padding-top:0">
+    <div class="section-head reveal"><h2>Skills</h2></div>
+    <div class="two-col">
+      {Object.entries(SKILLS).map(([group, items]) => (
+        <div class="panel reveal">
+          <h3>{group}</h3>
+          <ul class="tags">{items.map((s) => <li class="tag">{s}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>
