@@ -7,61 +7,97 @@ const onScroll = () => nav.classList.toggle('scrolled', scrollY > 8);
 addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
+const drawer = document.getElementById('menu')!;
+if (typeof drawer.hidePopover === 'function') {
+  matchMedia('(max-width: 45rem)').addEventListener('change', ({ matches }) => {
+    if (!matches && drawer.matches(':popover-open')) drawer.hidePopover();
+  });
+}
+
 /* ---------- Theme toggle with circular reveal ---------- */
-document.querySelector<HTMLButtonElement>('.theme-btn')!.addEventListener('click', async (e) => {
-  const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+const themeButton = document.querySelector<HTMLButtonElement>('.theme-btn')!;
+const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')!;
+let requestedTheme = root.dataset.theme === 'light' ? 'light' : 'dark';
+let themeTransition: ViewTransition | undefined;
+const syncTheme = () => {
+  themeButton.setAttribute('aria-pressed', String(root.dataset.theme === 'light'));
+  themeColor.content = getComputedStyle(root).getPropertyValue('--bg').trim() || themeColor.content;
+};
+syncTheme();
+themeButton.hidden = false;
+themeButton.addEventListener('click', async (e) => {
+  const next = requestedTheme = requestedTheme === 'light' ? 'dark' : 'light';
   const apply = () => {
+    if (next !== requestedTheme) return;
     root.dataset.theme = next;
+    syncTheme();
     try { localStorage.setItem('theme', next); } catch {}
     dispatchEvent(new Event('themechange'));
   };
-  if (!document.startViewTransition || reducedMotion()) return apply();
+  if (themeTransition) {
+    themeTransition.skipTransition();
+    return apply();
+  }
+  if (!document.startViewTransition || reducedMotion() || e.detail === 0) return apply();
 
   const { clientX: x, clientY: y } = e;
   const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
   root.classList.add('theme-vt');
-  const t = document.startViewTransition(apply);
-  t.finished.finally(() => root.classList.remove('theme-vt'));
-  await t.ready;
-  root.animate(
-    { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
-    { duration: 400, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)', pseudoElement: '::view-transition-new(root)' },
-  );
+  const transition = themeTransition = document.startViewTransition(apply);
+  try {
+    await transition.ready;
+    root.animate(
+      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
+      { duration: 400, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)', pseudoElement: '::view-transition-new(root)' },
+    );
+  } catch {
+    // A skipped transition still applies the theme.
+  } finally {
+    await transition.finished;
+    themeTransition = undefined;
+    root.classList.remove('theme-vt');
+  }
 });
 
 /* ---------- Copy email ---------- */
 const copyButton = document.querySelector<HTMLButtonElement>('[data-copy]');
-if (copyButton) {
+if (copyButton && navigator.clipboard?.writeText) {
   const status = document.getElementById('copy-status')!;
+  copyButton.hidden = false;
   copyButton.addEventListener('click', async () => {
+    if (copyButton.hasAttribute('aria-disabled')) return;
+    copyButton.setAttribute('aria-disabled', 'true');
     try {
       await navigator.clipboard.writeText(copyButton.dataset.copy!);
+      copyButton.classList.add('copied');
+      status.textContent = 'Email address copied.';
     } catch {
       copyButton.classList.remove('copied');
       status.textContent = 'Couldn’t copy the email address. Select it to copy it manually.';
-      return;
+    } finally {
+      copyButton.removeAttribute('aria-disabled');
     }
-    copyButton.classList.add('copied');
-    status.textContent = 'Email address copied.';
   });
 }
 
 /* ---------- Ctrl/Cmd+K quick search ---------- */
 type Item = { t: string; u: string; k: string; s?: string };
 const dialog = document.querySelector<HTMLDialogElement>('dialog.search')!;
+const canSearch = typeof dialog.showModal === 'function';
 const input = dialog.querySelector('input')!;
 const list = dialog.querySelector('ul')!;
 const searchStatus = document.getElementById('search-status')!;
 const index: Item[] = JSON.parse(document.getElementById('search-index')!.textContent!);
 let selected = 0;
+let options: HTMLAnchorElement[] = [];
 
 function search(items: Item[], q: string) {
-  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const words = q.normalize().toLowerCase().split(/\s+/).filter(Boolean);
   if (!words.length) return items;
   return items
     .map((it) => {
-      const title = it.t.toLowerCase();
-      const hay = `${title} ${it.k} ${it.s ?? ''}`.toLowerCase();
+      const title = it.t.normalize().toLowerCase();
+      const hay = `${title} ${it.k} ${it.s ?? ''}`.normalize().toLowerCase();
       if (!words.every((w) => hay.includes(w))) return null;
       const score = words.reduce((n, w) => n + (title.startsWith(w) ? 3 : title.includes(w) ? 2 : 0), 0);
       return { it, score };
@@ -71,63 +107,95 @@ function search(items: Item[], q: string) {
     .map((x) => x.it);
 }
 
+function selectResult(i: number, scroll = false) {
+  const option = options[i];
+  if (!option) {
+    input.removeAttribute('aria-activedescendant');
+    return;
+  }
+  options[selected]?.setAttribute('aria-selected', 'false');
+  option.setAttribute('aria-selected', 'true');
+  input.setAttribute('aria-activedescendant', option.id);
+  selected = i;
+  if (scroll) option.scrollIntoView({ block: 'nearest' });
+}
+
 function render() {
   const results = search(index, input.value);
-  selected = Math.min(selected, Math.max(results.length - 1, 0));
-  list.replaceChildren(
-    ...results.map((r, i) => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = r.u;
-      a.setAttribute('role', 'option');
-      a.setAttribute('aria-selected', String(i === selected));
-      a.textContent = r.t;
-      const meta = document.createElement('span');
-      meta.textContent = r.k;
-      a.append(meta);
-      a.addEventListener('pointermove', () => { if (selected !== i) { selected = i; render(); } });
-      li.append(a);
-      return li;
-    }),
-  );
+  const rows = document.createDocumentFragment();
+  options = results.map((result, i) => {
+    const row = document.createElement('li');
+    row.setAttribute('role', 'none');
+    const link = document.createElement('a');
+    link.id = `search-result-${i}`;
+    link.href = result.u;
+    link.tabIndex = -1;
+    link.setAttribute('role', 'option');
+    link.setAttribute('aria-selected', 'false');
+    const title = document.createElement('span');
+    title.dir = 'auto';
+    title.textContent = result.t;
+    const meta = document.createElement('span');
+    meta.className = 'search-result-meta';
+    meta.dir = 'auto';
+    meta.textContent = result.k;
+    link.append(title, meta);
+    link.addEventListener('pointerenter', () => selectResult(i));
+    row.append(link);
+    rows.append(row);
+    return link;
+  });
+  list.replaceChildren(rows);
+  list.scrollTop = 0;
+  input.setAttribute('aria-expanded', String(results.length > 0));
+  selectResult(0);
   searchStatus.textContent = results.length ? '' : 'No matches. Try a shorter search or a different term.';
-  list.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
 }
 
 function openSearch() {
   if (dialog.open) return;
   input.value = '';
-  selected = 0;
   render();
   dialog.showModal();
   input.focus();
 }
 
 if (/Mac|iPhone|iPad/.test(navigator.platform)) document.querySelectorAll('[data-kbd]').forEach((k) => (k.textContent = '⌘K'));
-document.querySelectorAll('[data-search-open]').forEach((b) => b.addEventListener('click', openSearch));
-input.addEventListener('input', () => { selected = 0; render(); });
+if (canSearch) {
+  const searchButton = document.querySelector<HTMLButtonElement>('[data-search-open]')!;
+  searchButton.hidden = false;
+  searchButton.addEventListener('click', openSearch);
+}
+input.addEventListener('input', render);
 input.addEventListener('keydown', (e) => {
+  if (e.isComposing) return;
   if (e.key === 'Escape') {
     e.preventDefault();
     dialog.close();
     return;
   }
-  const n = list.querySelectorAll('[role="option"]').length;
+  const n = options.length;
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
     e.preventDefault();
-    if (n) { selected = (selected + (e.key === 'ArrowDown' ? 1 : n - 1)) % n; render(); }
+    if (n) selectResult((selected + (e.key === 'ArrowDown' ? 1 : n - 1)) % n, true);
   } else if (e.key === 'Enter') {
     e.preventDefault();
-    list.querySelector<HTMLAnchorElement>('[aria-selected="true"]')?.click();
+    options[selected]?.click();
   }
 });
 dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+dialog.addEventListener('close', () => {
+  if (dialog.open) return;
+  input.setAttribute('aria-expanded', 'false');
+  input.removeAttribute('aria-activedescendant');
+});
 
 /* ---------- Global keys: search shortcut + Konami easter egg ---------- */
 const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 let keys: string[] = [];
 addEventListener('keydown', (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+  if (e.isComposing) return;
+  if (canSearch && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
     e.preventDefault();
     dialog.open ? dialog.close() : openSearch();
     return;

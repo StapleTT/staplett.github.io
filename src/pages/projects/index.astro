@@ -11,12 +11,12 @@ const projects = await getProjects();
     <h1>Projects</h1>
     <p>Security tooling, self-hosted apps, and the dotfiles holding it all together.</p>
   </div>
-  <section class="wrap section" style="padding-top:2rem">
-    <div class="chips" role="group" aria-label="Filter by category">
+  <section class="wrap page-content">
+    <div class="chips" role="group" aria-label="Filter by category" hidden>
       <button class="chip" type="button" aria-pressed="true" data-filter="all">All</button>
       {CATEGORIES.map((c) => <button class="chip" type="button" aria-pressed="false" data-filter={c}>{c}</button>)}
     </div>
-    <p class="visually-hidden" aria-live="polite" id="filter-status"></p>
+    <p class={projects.length ? 'visually-hidden' : undefined} role="status" id="filter-status">{!projects.length && 'No projects to show yet.'}</p>
     <ul class="grid" id="project-grid">
       {projects.map((p) => (
         <li data-categories={JSON.stringify(p.data.categories)}><ProjectCard project={p} headingLevel="h2" /></li>
@@ -29,7 +29,9 @@ const projects = await getProjects();
   // Filter chips. View Transitions animate the reorder (FLIP) using each card's view-transition-name.
   const items = [...document.querySelectorAll<HTMLLIElement>('#project-grid > li')];
   const chips = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  const filters = document.querySelector<HTMLElement>('.chips')!;
   const status = document.getElementById('filter-status')!;
+  let requested = 'all';
 
   function apply(filter: string) {
     let shown = 0;
@@ -39,13 +41,18 @@ const projects = await getProjects();
       if (ok) shown++;
     }
     chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.filter === filter)));
-    status.textContent = `${shown} project${shown === 1 ? '' : 's'} shown`;
+    status.classList.toggle('visually-hidden', shown > 0);
+    status.textContent = shown === 0 ? 'No projects in this category. Choose All to see every project.'
+      : shown === 1 ? '1 project shown' : `${shown} projects shown`;
   }
 
   chips.forEach((chip) => chip.addEventListener('click', () => {
-    const f = chip.dataset.filter!;
+    const f = requested = chip.dataset.filter!;
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (document.startViewTransition && !reduce) document.startViewTransition(() => apply(f));
-    else apply(f);
+    if (document.startViewTransition && !reduce) {
+      const transition = document.startViewTransition(() => { if (requested === f) apply(f); });
+      void transition.ready.catch(() => {}); // A newer choice can skip this animation.
+    } else apply(f);
   }));
+  if (items.length) filters.hidden = false;
 </script>

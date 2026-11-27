@@ -52,7 +52,7 @@ It is not an online resume. The full resume goes to people directly on request a
 - **Tagline:** "cybersecurity, self-hosting, and tiny computers."
 - **Voice:** casual and a little playful in the frame ("who's asking?", "extremely questionable"); clear, specific, and competent in project write-ups.
 - **Avatar:** the illustrated avatar from GitHub (`public/avatar.webp`). No real photos, ever.
-- **Carried over from the old terminal site:** teal as the main accent and amber for small highlights. Dark by default with a light mode.
+- Charcoal and warm off-white set the palette, with rose and blush accents from the avatar. Dark by default with a light mode.
 
 ## Evidence on Hand
 

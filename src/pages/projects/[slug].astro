@@ -18,34 +18,31 @@ const { Content } = await render(p);
 ---
 <Base title={p.data.title} description={p.data.summary}>
   <div class="progress" aria-hidden="true"></div>
-  <article class="wrap page-head">
+  <article class="wrap page-head project-detail">
     <header class="detail-head">
+      <p class="detail-back"><a href="/projects/">← All projects</a></p>
       <Cover project={p} />
       <h1 style={`view-transition-name: title-${p.id}`}>{p.data.title}</h1>
       <p class="summary">{p.data.summary}</p>
-      <div class="detail-meta">
-        <div class="detail-links">
-          {p.data.repo && <a class="btn primary" href={p.data.repo}>View code <span aria-hidden="true">↗</span></a>}
-          {p.data.live && <a class="btn" href={p.data.live}>Visit {new URL(p.data.live).hostname} <span aria-hidden="true">↗</span></a>}
-          {!p.data.repo && !p.data.live && <span class="muted">No public code link.</span>}
-        </div>
+      <div class="detail-links">
+        {p.data.repo && <a class="btn primary" href={p.data.repo}>View code <span aria-hidden="true">↗</span></a>}
+        {p.data.live && <a class="btn" href={p.data.live}>Visit {new URL(p.data.live).hostname} <span aria-hidden="true">↗</span></a>}
+        {!p.data.repo && !p.data.live && <span class="muted">No public code link.</span>}
       </div>
     </header>
 
-    <div class="detail-layout">
-      <div class="prose"><Content /></div>
-      <aside class="aside-box" aria-label="Project details">
-        <div>
-          <h2>Tech stack</h2>
-          <ul class="tags">{p.data.stack.map((s) => <li class="tag">{s}</li>)}</ul>
-        </div>
-        <div>
-          <h2>Categories</h2>
-          <p>{p.data.categories.join(' · ')}</p>
-        </div>
-        <p><a href="/projects/">← All projects</a></p>
-      </aside>
-    </div>
+    <aside class="detail-facts" aria-label="Project details">
+      <div>
+        <h2>Tech stack</h2>
+        <ul class="tags">{p.data.stack.map((s) => <li class="tag">{s}</li>)}</ul>
+      </div>
+      <div>
+        <h2>Categories</h2>
+        <p>{p.data.categories.join(' · ')}</p>
+      </div>
+    </aside>
+
+    <div class="prose"><Content /></div>
 
     <nav class="pager" aria-label="More projects">
       {prev && <a href={`/projects/${prev.id}/`}><span>← Previous</span><b>{prev.data.title}</b></a>}

@@ -15,8 +15,8 @@ const projects = defineCollection({
     featured: z.boolean().default(false),
     // Hidden from the build until set to false (school projects need instructor sign-off).
     draft: z.boolean().default(false),
-    repo: z.url().optional(),
-    live: z.url().optional(),
+    repo: z.url({ protocol: /^https?$/ }).optional(),
+    live: z.url({ protocol: /^https?$/ }).optional(),
     cover: z.string().optional(),
     coverAlt: z.string().optional(),
   }),
