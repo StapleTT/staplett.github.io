@@ -1,7 +1,7 @@
 ---
 title: tack
 summary: Parsec-style browser client for Moonlight/Sunshine game streaming, paired with cork, a Sunshine fork.
-stack: [Go, TypeScript, WebRTC, C]
+stack: [Go, TypeScript, WebRTC]
 categories: [Self-hosting, Games & mods]
 order: 3
 featured: true

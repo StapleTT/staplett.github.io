@@ -3,11 +3,9 @@ import type { Project } from '../site';
 
 interface Props { project: Project }
 const { project: p } = Astro.props;
-// Stable per-project hue so every card gets its own color without needing a screenshot.
-const hue = [...p.id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
 ---
-<div class="cover" style={`--h:${hue}; view-transition-name: cover-${p.id}`}>
-  {p.data.cover
-    ? <img src={p.data.cover} alt={p.data.coverAlt ?? ''} loading="lazy" decoding="async" />
-    : <span class="glyph" aria-hidden="true">~/{p.id} · {p.data.categories[0].toLowerCase()}</span>}
-</div>
+{p.data.cover && (
+  <div class="cover" style={`view-transition-name: cover-${p.id}`}>
+    <img src={p.data.cover} alt={p.data.coverAlt ?? ''} loading="lazy" decoding="async" />
+  </div>
+)}

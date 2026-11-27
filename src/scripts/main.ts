@@ -29,57 +29,6 @@ document.querySelector<HTMLButtonElement>('.theme-btn')!.addEventListener('click
   );
 });
 
-/* ---------- Scroll reveals (once) ---------- */
-const reveals = document.querySelectorAll('.reveal');
-if ('IntersectionObserver' in window) {
-  const io = new IntersectionObserver((entries) => {
-    for (const en of entries) if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-  }, { rootMargin: '0px 0px -8% 0px' });
-  reveals.forEach((el) => io.observe(el));
-} else reveals.forEach((el) => el.classList.add('in'));
-
-/* ---------- Count-up stats (markup holds the final number) ---------- */
-const counters = document.querySelectorAll<HTMLElement>('[data-count]');
-if (counters.length && !reducedMotion()) {
-  const io = new IntersectionObserver((entries) => {
-    for (const en of entries) {
-      if (!en.isIntersecting) continue;
-      io.unobserve(en.target);
-      const el = en.target as HTMLElement;
-      const end = Number(el.dataset.count);
-      const t0 = performance.now();
-      const step = (t: number) => {
-        const k = Math.min(1, (t - t0) / 900);
-        el.textContent = String(Math.round(end * (1 - (1 - k) ** 3)));
-        if (k < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    }
-  });
-  counters.forEach((el) => io.observe(el));
-}
-
-/* ---------- Card tilt + glow (fine pointers only) ---------- */
-if (matchMedia('(hover: hover) and (pointer: fine)').matches && !reducedMotion()) {
-  document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
-    card.addEventListener('pointermove', (e) => {
-      const b = card.getBoundingClientRect();
-      const px = (e.clientX - b.left) / b.width;
-      const py = (e.clientY - b.top) / b.height;
-      card.classList.add('tilting');
-      card.style.setProperty('--mx', `${px * 100}%`);
-      card.style.setProperty('--my', `${py * 100}%`);
-      card.style.setProperty('--ry', `${(px - 0.5) * 6}deg`);
-      card.style.setProperty('--rx', `${(0.5 - py) * 6}deg`);
-    });
-    card.addEventListener('pointerleave', () => {
-      card.classList.remove('tilting');
-      card.style.setProperty('--rx', '0deg');
-      card.style.setProperty('--ry', '0deg');
-    });
-  });
-}
-
 /* ---------- Copy email ---------- */
 document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
   btn.addEventListener('click', async () => {

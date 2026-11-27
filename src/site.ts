@@ -2,7 +2,6 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export const EMAIL = 'staplett@pm.me';
 export const GITHUB = 'https://github.com/StapleTT';
-export const PUBLIC_REPOS = 17;
 
 export const SKILLS: Record<string, string[]> = {
   Languages: ['Python', 'TypeScript/JavaScript', 'Bash', 'Go', 'Java', 'C#', 'SQL', 'HTML/CSS', 'QML'],

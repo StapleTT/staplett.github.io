@@ -9,7 +9,7 @@ const projects = await getProjects();
 <Base title="Projects" description="Everything Staple has built: security tooling, self-hosted apps, dotfiles, and game mods.">
   <div class="wrap page-head">
     <h1>Projects</h1>
-    <p>Security tooling, self-hosted apps, and the dotfiles holding it all together. Cards marked "repo" go straight to GitHub.</p>
+    <p>Security tooling, self-hosted apps, and the dotfiles holding it all together.</p>
   </div>
   <section class="wrap section" style="padding-top:2rem">
     <div class="chips" role="group" aria-label="Filter by category">
@@ -19,7 +19,7 @@ const projects = await getProjects();
     <p class="visually-hidden" aria-live="polite" id="filter-status"></p>
     <ul class="grid" id="project-grid">
       {projects.map((p) => (
-        <li data-categories={JSON.stringify(p.data.categories)}><ProjectCard project={p} /></li>
+        <li data-categories={JSON.stringify(p.data.categories)}><ProjectCard project={p} headingLevel="h2" /></li>
       ))}
     </ul>
   </section>

@@ -17,7 +17,7 @@ import { SKILLS } from '../site';
 
   <section class="wrap section">
     <div class="two-col">
-      <div class="panel reveal">
+      <div class="panel">
         <h2>Focus areas</h2>
         <ul>
           <li><b>Cybersecurity:</b> network attacks and defenses, hardening, packet analysis</li>
@@ -26,7 +26,7 @@ import { SKILLS } from '../site';
           <li><b>Hardware:</b> small form factor PC builds</li>
         </ul>
       </div>
-      <div class="panel building reveal">
+      <div class="panel building">
         <h2><span class="pulse" aria-hidden="true"></span>Currently building</h2>
         <ul>
           <li><a href="/projects/spindle/">Spindle</a>: a keyboard-first, self-hostable email client</li>
@@ -37,10 +37,10 @@ import { SKILLS } from '../site';
   </section>
 
   <section class="wrap section" id="skills" style="padding-top:0">
-    <div class="section-head reveal"><h2>Skills</h2></div>
+    <div class="section-head"><h2>Skills</h2></div>
     <div class="two-col">
       {Object.entries(SKILLS).map(([group, items]) => (
-        <div class="panel reveal">
+        <div class="panel">
           <h3>{group}</h3>
           <ul class="tags">{items.map((s) => <li class="tag">{s}</li>)}</ul>
         </div>
