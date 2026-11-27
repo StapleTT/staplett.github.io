@@ -25,9 +25,9 @@ const { Content } = await render(p);
       <p class="summary">{p.data.summary}</p>
       <div class="detail-meta">
         <div class="detail-links">
-          {p.data.repo && <a class="btn primary" href={p.data.repo}>View repo ↗</a>}
-          {p.data.live && <a class="btn" href={p.data.live}>{new URL(p.data.live).hostname} ↗</a>}
-          {!p.data.repo && !p.data.live && <span class="muted">Write-up only, no public repo.</span>}
+          {p.data.repo && <a class="btn primary" href={p.data.repo}>View code <span aria-hidden="true">↗</span></a>}
+          {p.data.live && <a class="btn" href={p.data.live}>Visit {new URL(p.data.live).hostname} <span aria-hidden="true">↗</span></a>}
+          {!p.data.repo && !p.data.live && <span class="muted">No public code link.</span>}
         </div>
       </div>
     </header>
@@ -36,11 +36,11 @@ const { Content } = await render(p);
       <div class="prose"><Content /></div>
       <aside class="aside-box" aria-label="Project details">
         <div>
-          <h2>stack</h2>
+          <h2>Tech stack</h2>
           <ul class="tags">{p.data.stack.map((s) => <li class="tag">{s}</li>)}</ul>
         </div>
         <div>
-          <h2>category</h2>
+          <h2>Categories</h2>
           <p>{p.data.categories.join(' · ')}</p>
         </div>
         <p><a href="/projects/">← All projects</a></p>

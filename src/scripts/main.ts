@@ -30,24 +30,28 @@ document.querySelector<HTMLButtonElement>('.theme-btn')!.addEventListener('click
 });
 
 /* ---------- Copy email ---------- */
-document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
-  btn.addEventListener('click', async () => {
+const copyButton = document.querySelector<HTMLButtonElement>('[data-copy]');
+if (copyButton) {
+  const status = document.getElementById('copy-status')!;
+  copyButton.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(btn.dataset.copy!);
+      await navigator.clipboard.writeText(copyButton.dataset.copy!);
     } catch {
-      return; // clipboard blocked: the address is still visible and selectable
+      copyButton.classList.remove('copied');
+      status.textContent = 'Couldn’t copy the email address. Select it to copy it manually.';
+      return;
     }
-    btn.classList.add('copied');
-    btn.setAttribute('aria-label', 'Copied');
-    setTimeout(() => { btn.classList.remove('copied'); btn.setAttribute('aria-label', 'Copy email address'); }, 2000);
+    copyButton.classList.add('copied');
+    status.textContent = 'Email address copied.';
   });
-});
+}
 
 /* ---------- Ctrl/Cmd+K quick search ---------- */
 type Item = { t: string; u: string; k: string; s?: string };
 const dialog = document.querySelector<HTMLDialogElement>('dialog.search')!;
 const input = dialog.querySelector('input')!;
 const list = dialog.querySelector('ul')!;
+const searchStatus = document.getElementById('search-status')!;
 const index: Item[] = JSON.parse(document.getElementById('search-index')!.textContent!);
 let selected = 0;
 
@@ -86,12 +90,7 @@ function render() {
       return li;
     }),
   );
-  if (!results.length) {
-    const li = document.createElement('li');
-    li.className = 'empty';
-    li.textContent = 'Nothing matches that.';
-    list.append(li);
-  }
+  searchStatus.textContent = results.length ? '' : 'No matches. Try a shorter search or a different term.';
   list.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
 }
 
@@ -108,6 +107,11 @@ if (/Mac|iPhone|iPad/.test(navigator.platform)) document.querySelectorAll('[data
 document.querySelectorAll('[data-search-open]').forEach((b) => b.addEventListener('click', openSearch));
 input.addEventListener('input', () => { selected = 0; render(); });
 input.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    dialog.close();
+    return;
+  }
   const n = list.querySelectorAll('[role="option"]').length;
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
     e.preventDefault();
